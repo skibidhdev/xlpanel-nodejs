@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="space-y-8">
+    <section class="bg-blue-900 bg-opacity-20 rounded-lg p-6 shadow-lg">
+      <h2 class="text-3xl font-semibold mb-2">{{ bigWel }}</h2>
+      <h4 class="text-lg text-blue-300">{{ smallWel }}</h4>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-blue-900 bg-opacity-20 rounded-lg p-4 shadow-md">
+        <div class="text-sm font-medium mb-1">CPU: {{ int(cpu) }}% / {{ dcpu }}%</div>
+        <div class="w-full bg-blue-800 rounded-full h-3">
+          <div class="bg-blue-500 h-3 rounded-full" style="width: {{ max(0, min((cpu/dcpu)*100, 100)) }}%"></div>
+        </div>
+      </div>
+      <div class="bg-blue-900 bg-opacity-20 rounded-lg p-4 shadow-md">
+        <div class="text-sm font-medium mb-1">RAM: {{ int(ram) }}MB / {{ dram }}MB</div>
+        <div class="w-full bg-blue-800 rounded-full h-3">
+          <div class="bg-blue-500 h-3 rounded-full" style="width: {{ max(0, min((ram/dram)*100, 100)) }}%"></div>
+        </div>
+      </div>
+      <div class="bg-blue-900 bg-opacity-20 rounded-lg p-4 shadow-md">
+        <div class="text-sm font-medium mb-1">Disk: {{ int(disk) }}MB / {{ ddisk }}MB</div>
+        <div class="w-full bg-blue-800 rounded-full h-3">
+          <div class="bg-blue-500 h-3 rounded-full" style="width: {{ max(0, min((disk/ddisk)*100, 100)) }}%"></div>
+        </div>
+      </div>
+      <div class="bg-blue-900 bg-opacity-20 rounded-lg p-4 shadow-md">
+        <div class="text-sm font-medium mb-1">Slot: {{ slot }} / {{ dslot }}</div>
+        <div class="w-full bg-blue-800 rounded-full h-3">
+          <div class="bg-blue-500 h-3 rounded-full" style="width: {{ max(0, min((slot/dslot)*100, 100)) }}%"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-blue-900 bg-opacity-20 rounded-lg p-6 shadow-lg text-center">
+      <h4>Look like you don't know where the panel is?</h4>
+      <h4>Find <a href="/panel" class="text-blue-400 hover:underline">it</a> if you can ;)</h4>
+      <br />
+      <h4><a href="/logout" class="text-red-400 hover:underline">Logout?</a></h4>
+    </section>
+  </div>
+{% endblock %}
