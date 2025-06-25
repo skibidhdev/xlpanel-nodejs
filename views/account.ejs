@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+
+<div class="container py-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Profile Header -->
+    <div class="text-center mb-8">
+      <div class="w-24 h-24 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="fas fa-user text-4xl text-primary"></i>
+      </div>
+      <h1 class="text-3xl font-bold mb-2"><%= userData.username %></h1>
+      <p class="text-secondary"><%= userData.email %></p>
+    </div>
+
+    <!-- Account Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="card">
+        <div class="text-center">
+          <i class="fas fa-coins text-4xl text-warning mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">Coins Balance</h3>
+          <p class="text-3xl font-bold"><%= userData.coins %></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="text-center">
+          <i class="fas fa-server text-4xl text-primary mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">Active Servers</h3>
+          <p class="text-3xl font-bold"><%= resources.servers.used %> / <%= resources.servers.limit %></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="text-center">
+          <i class="fas fa-clock text-4xl text-success mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2">Member Since</h3>
+          <p class="text-lg"><%= new Date(userData.createdAt).toLocaleDateString() %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resource Usage -->
+    <div class="card mb-8">
+      <h2 class="text-2xl font-bold mb-6">Resource Usage</h2>
+      
+      <div class="space-y-6">
+        <!-- CPU -->
+        <div>
+          <div class="flex justify-between mb-2">
+            <span>CPU Usage</span>
+            <span><%= resources.cpu.used %>% / <%= resources.cpu.limit %>%</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar bg-primary" style="width: <%= (resources.cpu.used / resources.cpu.limit) * 100 %>%"></div>
+          </div>
+        </div>
+
+        <!-- Memory -->
+        <div>
+          <div class="flex justify-between mb-2">
+            <span>Memory Usage</span>
+            <span><%= resources.memory.used %>MB / <%= resources.memory.limit %>MB</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar bg-primary" style="width: <%= (resources.memory.used / resources.memory.limit) * 100 %>%"></div>
+          </div>
+        </div>
+
+        <!-- Disk -->
+        <div>
+          <div class="flex justify-between mb-2">
+            <span>Disk Usage</span>
+            <span><%= resources.disk.used %>MB / <%= resources.disk.limit %>MB</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar bg-primary" style="width: <%= (resources.disk.used / resources.disk.limit) * 100 %>%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card">
+      <h2 class="text-2xl font-bold mb-6">Recent Transactions</h2>
+      
+      <div class="space-y-4">
+        <% if (transactions && transactions.length > 0) { %>
+          <% transactions.forEach(transaction => { %>
+            <div class="flex justify-between items-center p-4 bg-card-bg rounded-lg">
+              <div>
+                <h4 class="font-semibold"><%= transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) %></h4>
+                <p class="text-sm text-secondary"><%= transaction.description %></p>
+                <span class="text-sm text-secondary"><%= new Date(transaction.created_at).toLocaleString() %></span>
+              </div>
+              <div class="text-xl font-bold <%= transaction.amount > 0 ? 'text-success' : 'text-error' %>">
+                <%= transaction.amount > 0 ? '+' : '' %><%= transaction.amount %> coins
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p class="text-center text-secondary py-4">No recent transactions</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
