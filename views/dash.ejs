@@ -1,0 +1,133 @@
+<%- include('partials/header') %>
+
+<!-- Main Content -->
+<main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    <!-- Welcome Section -->
+    <section class="card text-center">
+      <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(to right, #60a5fa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <%= bigWel %>
+      </h2>
+      <p style="font-size: 1.25rem; color: var(--text-dark);"><%= smallWel %></p>
+    </section>
+
+    <!-- Resource Usage Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- CPU Card -->
+      <div class="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-200">CPU Usage</h3>
+          <i class="fas fa-microchip text-blue-400 text-xl"></i>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-400"><%= parseInt(cpu) %>% / <%= dcpu %>%</span>
+            <span class="text-blue-400"><%= Math.round((cpu/dcpu)*100) %>%</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-3">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500" 
+                 style="width: <%= Math.max(0, Math.min((cpu/dcpu)*100, 100)) %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAM Card -->
+      <div class="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-200">Memory</h3>
+          <i class="fas fa-memory text-green-400 text-xl"></i>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-400"><%= parseInt(ram) %>MB / <%= dram %>MB</span>
+            <span class="text-green-400"><%= Math.round((ram/dram)*100) %>%</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-3">
+            <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500" 
+                 style="width: <%= Math.max(0, Math.min((ram/dram)*100, 100)) %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disk Card -->
+      <div class="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-200">Storage</h3>
+          <i class="fas fa-hdd text-purple-400 text-xl"></i>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-400"><%= parseInt(disk) %>MB / <%= ddisk %>MB</span>
+            <span class="text-purple-400"><%= Math.round((disk/ddisk)*100) %>%</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-3">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500" 
+                 style="width: <%= Math.max(0, Math.min((disk/ddisk)*100, 100)) %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slots Card -->
+      <div class="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-200">Server Slots</h3>
+          <i class="fas fa-server text-yellow-400 text-xl"></i>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-400"><%= slot %> / <%= dslot %></span>
+            <span class="text-yellow-400"><%= Math.round((slot/dslot)*100) %>%</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-3">
+            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 h-3 rounded-full transition-all duration-500" 
+                 style="width: <%= Math.max(0, Math.min((slot/dslot)*100, 100)) %>%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="bg-gray-800/60 backdrop-blur-sm rounded-xl p-8 border border-blue-500/30 shadow-2xl text-center">
+      <h3 class="text-2xl font-bold mb-6 text-gray-200">Quick Actions</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="/panel" class="group bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-lg p-6 transition-all duration-300 hover:scale-105">
+          <i class="fas fa-cogs text-3xl text-blue-400 mb-4 group-hover:text-blue-300"></i>
+          <h4 class="text-lg font-semibold text-gray-200 mb-2">Server Panel</h4>
+          <p class="text-gray-400 text-sm">Manage your servers and resources</p>
+        </a>
+        
+        <a href="/servers" class="group bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 rounded-lg p-6 transition-all duration-300 hover:scale-105">
+          <i class="fas fa-server text-3xl text-green-400 mb-4 group-hover:text-green-300"></i>
+          <h4 class="text-lg font-semibold text-gray-200 mb-2">My Servers</h4>
+          <p class="text-gray-400 text-sm">View and control your servers</p>
+        </a>
+        
+        <a href="/store" class="group bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 rounded-lg p-6 transition-all duration-300 hover:scale-105">
+          <i class="fas fa-shopping-cart text-3xl text-purple-400 mb-4 group-hover:text-purple-300"></i>
+          <h4 class="text-lg font-semibold text-gray-200 mb-2">Store</h4>
+          <p class="text-gray-400 text-sm">Purchase servers and resources</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Help Section -->
+    <section class="bg-gray-800/60 backdrop-blur-sm rounded-xl p-8 border border-blue-500/30 shadow-2xl text-center">
+      <div class="max-w-2xl mx-auto">
+        <h4 class="text-xl font-semibold mb-4 text-gray-200">Need Help?</h4>
+        <p class="text-gray-400 mb-6">Look like you don't know where the panel is?</p>
+        <div class="space-x-4">
+          <a href="/panel" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-300">
+            <i class="fas fa-search mr-2"></i>
+            Find Panel
+          </a>
+          <a href="/logout" class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-300">
+            <i class="fas fa-sign-out-alt mr-2"></i>
+            Logout
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
