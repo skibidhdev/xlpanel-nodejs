@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/assets/css/general.css">
+    <link rel="stylesheet" href="/assets/css/dash_css.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/png">
+    <script>
+        document.onreadystatechange = function() {
+            if (document.readyState == 'complete') {
+                $(".loading").fadeOut(200)
+                $("body").css("overflow-y","unset")
+                $("main").delay(300).css("animation", "showing 0.5s forwards ease-in-out");
+                document.onreadystatechange = () => {}
+            }
+        };
+    </script>
+    <script src="/assets/js/admin.js"></script>
+    <script src="/assets/js/dash.js"></script>
+    <title>Admin - {{name}}</title>
+</head>
+<body>
+    <div class="loading">
+        <div class="loader"></div>
+    </div>
+    <div class="nav">
+        <div class="name">
+            {{name}}
+        </div>
+        <div class="items">
+            <a onclick="sh()">
+                <div id="menuToggle" class="it">
+                    <i class="fa-solid fa-bars"></i><it>&nbsp;Hide menu</it>
+                </div>
+            </a>
+            {% for i in list(mIt.keys()) %}
+            <a href="{{mIt[i]['link']}}">
+                <div class="it">
+                    {{mIt[i]["icon"] | safe}}<it>&nbsp;{{i}}</it>
+                </div>
+            </a>
+            {% endfor %}
+            {% if isAdmin %}
+            <a href="/admin" class="sp">
+                <div class="it">
+                    <i class="fa-solid fa-lock"></i><it>&nbsp;Admin Panel</it>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+        <div class="users">
+            <h5>{{user}}</h5>
+            <h6>Coins: {{coin}}</h6>
+        </div>
+    </div>
+    <div class="main">
+        <main>
+            <div class="title">
+                <div class="img">
+                    <img src="/assets/img/Xlpanel-transparent.png">
+                </div>
+                <div class="info">
+                    <info style="font-size: 5vw">Xlpanel</info><br>
+                    <info>Current version: {{version}}({{codename}})</info>
+                </div>
+            </div>
+            <div class="title1">
+                <h2>Admin</h2>
+                <h4>Welcome to the admin page!</h4>
+            </div>
+            {% if error!="none" and error %}
+            <div class="err">
+                <h3>Error:</h3>
+                <h4>{{error}}</h4>
+            </div>
+            {% elif error=="none" %}
+            <div class="done">
+                <h3>Done.</h3>
+            </div>
+            {% endif %}
+            <div class="form addRs">
+                <h3>Add resources</h3>
+                <form action="/admin/add">
+                    <div class="e">
+                        <div class="inp" style="max-width: unset;width: 100%">
+                            <input type="text" name="user" maxlength="32" placeholder="Username" required>
+                        </div>
+                        <div class="inp">
+                            <input type="number" name="cpu" min="-99999" max="99999" maxlength="6" placeholder="CPU(%)">
+                        </div>
+                        <div class="inp">
+                            <input type="number" name="ram" min="-99999" max="99999" maxlength="6" placeholder="Ram(MB)">
+                        </div>
+                        <div class="inp">
+                            <input type="number" name="disk" min="-99999" max="99999" maxlength="6" placeholder="Disk(MB)">
+                        </div>
+                        <div class="inp">
+                            <input type="number" name="slot" min="-99999" max="99999" maxlength="6" placeholder="Slot(int)">
+                        </div>
+                        <div class="inp">
+                            <input type="number" name="coin" min="-99999" max="99999" maxlength="6" placeholder="coin(int)">
+                        </div>
+                    </div>
+                    <button>Submit</button>
+                </form>
+            </div>
+            <div class="userManager">
+                <h3>Manage users</h3>
+                <h5>Total user: {{len(ul)}}</h5>
+                {% for i in ul %}
+                <div class="user">
+                    <div class="info">
+                        <div class="inf">
+                            <h4>Username:</h4>
+                            <h4 style="user-select: text">{{i[0]}}</h4>
+                        </div>
+                        <div class="inf">
+                            <h4>Email:</h4>
+                            <h4 style="user-select: text">{{i[6]}}</h4>
+                        </div>
+                        <div class="inf">
+                            <h4>Verified:</h4>
+                            <h4 {% if not i[7] %} style="color: #aa0000" {% endif %}>{{"True" if i[7] else "False"}}</h4>
+                        </div>
+                        <div class="inf">
+                            <h4>coin:</h4>
+                            <h4>{{i[1]}}</h4>
+                        </div>
+                        <div class="res">
+                            <div>
+                                <h5>
+                                    <i class="fa-solid fa-microchip"></i>
+                                </h5>
+                                <h5>
+                                    {{i[2]}}%
+                                </h5>
+                            </div>
+                            <div>
+                                <h5>
+                                    <i class="fa-solid fa-hard-drive"></i>
+                                </h5>
+                                <h5>
+                                    {{i[3]}}MB
+                                </h5>
+                            </div>
+                            <div>
+                                <h5>
+                                    <i class="fa-solid fa-memory"></i>
+                                </h5>
+                                <h5>
+                                    {{i[4]}}MB
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action">
+                        {% if i[0] != user %}
+                        <button class="del" onclick="window.location = '/admin/ban/{{i[0]}}'">{{"Unb" if i[5] else "B"}}an</button>
+                        <button onclick="window.location = '/admin/createPtero/{{i[0]}}/{{i[6]}}'">Create panel account</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+        <footer>
+            <div class="text">
+                    <h6 style="float: right; margin-top: 2px;">
+                        <i class="fa-regular fa-clock"></i>
+                        {{loadTime}}s
+                    </h6>
+                    <h5>Copyright © 2024-{{datetime.datetime.now().strftime("%Y")}} <a href="https://github.com/h3l2f/xlpanel">Xlpanel</a>.</h5>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
