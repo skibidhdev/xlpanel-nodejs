@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/assets/css/general.css">
+    <link rel="stylesheet" href="/assets/css/dash_css.css">
+    <link rel="stylesheet" href="/assets/css/server.css">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/png">
+    <script>
+        document.onreadystatechange = function() {
+            if (document.readyState == 'complete') {
+                $(".loading").fadeOut(200)
+                $("body").css("overflow-y","unset")
+                $("main").delay(300).css("animation", "showing 0.5s forwards ease-in-out");
+                document.onreadystatechange = () => {}
+            }
+        };
+    </script>
+    <script src="/assets/js/server.js"></script>
+    <script src="/assets/js/dash.js"></script>
+    <title>Your servers - {{name}}</title>
+</head>
+<body>
+    <div class="loading">
+        <div class="loader"></div>
+    </div>
+    <div class="nav">
+        <div class="name">
+            {{name}}
+        </div>
+        <div class="items">
+            <a onclick="sh()">
+                <div id="menuToggle" class="it">
+                    <i class="fa-solid fa-bars"></i><it>&nbsp;Hide menu</it>
+                </div>
+            </a>
+            {% for i in list(mIt.keys()) %}
+            <a href="{{mIt[i]['link']}}" {% if request.path.replace('/','') == mIt[i]['link'].replace('/','') %} class="sp" {% endif %}>
+                <div class="it">
+                    {{mIt[i]["icon"] | safe}}<it>&nbsp;{{i}}</it>
+                </div>
+            </a>
+            {% endfor %}
+            {% if isAdmin %}
+            <a href="/admin">
+                <div class="it">
+                    <i class="fa-solid fa-lock"></i><it>&nbsp;Admin Panel</it>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+        <div class="users">
+            <h5>{{user}}</h5>
+            <h6>Coins: {{coin}}</h6>
+        </div>
+    </div>
+    <div class="crSp" style="display: none">
+        <div class="form">
+            <div class="ld">
+                <div class="loader"></div>
+            </div>
+            <h2 style="margin-bottom: 10px; float: right; font-weight: 100;">
+            <a style="color: #aa0000 !important; cursor: pointer" onclick="$('.crSp').fadeToggle(100)">
+                <i class="fa-solid fa-xmark"></i>
+            </a></h2>
+            <h2 style="margin-bottom: 10px; font-weight: 100;">Create</h2>
+            <form action="/servers/create">
+                <div class="inp">
+                    <input type="text" name="name" placeholder="Name" required>
+                </div>
+                <div class="ann">
+                    <div class="inp">
+                        <input type="number" min="1" max="99999" maxlength="5" minlength="1" name="cpu" placeholder="CPU (%)" autocomplete="off" required>
+                    </div>
+                    <div class="inp">
+                        <input type="number" min="1" max="99999" maxlength="5" minlength="1" name="ram" placeholder="Ram (MB)" autocomplete="off" required>
+                    </div>
+                    <div class="inp">
+                        <input type="number" min="1" max="99999" maxlength="5" minlength="1" name="disk" placeholder="Disk (MB)" autocomplete="off" required>
+                    </div>
+                </div>
+                <div class="inp">
+                    <select name="node">
+                        <optgroup label="_">
+                            <option value="_">Choose node</option>
+                        </optgroup>
+                        <optgroup label="Nodes">
+                            {% for i in list(nodes.keys()) %}
+                            <option value="{{i}}">{{nodes[i]["name"]}}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="inp">
+                    <select name="egg">
+                        <optgroup label="_">
+                            <option value="_">Choose egg</option>
+                        </optgroup>
+                        <optgroup label="Eggs">
+                            {% for i in list(eggs.keys()) %}
+                            <option value="{{i}}">{{eggs[i]["name"]}}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="btn">
+                    <input type="submit" value="Create">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="main">
+        <main>
+            <div class="title">
+                <button onclick="$('.crSp').fadeToggle(100);">
+                    <i class="fa-regular fa-plus"></i>
+                    Create
+                </button>
+                <h2>Servers</h2>
+                <h4>Your server will appear here!</h4>
+            </div>
+            {% if error!="none" and error %}
+            <div class="err">
+                <h3>Error on create:</h3>
+                <h4>{{error}}</h4>
+            </div>
+            {% elif error=="none" %}
+            <div class="done">
+                <h3>Your server has been created.</h3>
+            </div>
+            {% endif %}
+            <div class="sv">
+                {% for i in sv %}
+                    <div class="sio">
+                        <h2 style="overflow-x: hidden;
+                                   text-overflow: ellipsis;">{{i["name"]}}</h2>
+                        <h6>{{i['identifier']}}</h6>
+                        <div class="info" style="margin-top: 5px"><h4>CPU:</h4><h4>{{i["limits"]["cpu"]}}%</h4></div>
+                        <div class="info" style="margin-top: 5px"><h4>Ram:</h4><h4>{{i["limits"]["memory"]}}MB</h4></div>
+                        <div class="info" style="margin-top: 5px"><h4>Disk:</h4><h4>{{i["limits"]["disk"]}}MB</h4></div>
+                        <div class="info" style="margin-top: 5px"><h4>Status:</h4><h4>{{i.get("status") if i.get("status") else "active"}}</h4></div>
+                        <div class="btn">
+                            <a href="/panel/{{i['identifier']}}"><button>Panel</button></a>
+                            <a href="/server/{{i['identifier']}}"><button>Manage</button></a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </main>
+        <footer>
+            <div class="text">
+                    <h6 style="float: right; margin-top: 2px;">
+                        <i class="fa-regular fa-clock"></i>
+                        {{loadTime}}s
+                    </h6>
+                    <h5>Copyright © 2024-{{datetime.datetime.now().strftime("%Y")}} <a href="https://github.com/h3l2f/xlpanel">Xlpanel</a>.</h5>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
