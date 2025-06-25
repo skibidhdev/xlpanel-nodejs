@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+
+<div class="min-h-screen flex items-center justify-center py-12 px-4">
+  <div class="max-w-md w-full">
+    <div class="card text-center">
+      <div class="mb-6">
+        <div class="text-error text-6xl mb-4">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">
+          <%= typeof error.status === 'number' ? error.status : 500 %>
+        </h2>
+        <p class="text-secondary">
+          <%= typeof message !== 'undefined' ? message : 'An unexpected error occurred' %>
+        </p>
+      </div>
+
+      <% if (process.env.NODE_ENV === 'development' && error.stack) { %>
+        <div class="mt-6 p-4 bg-error bg-opacity-10 rounded-lg">
+          <pre class="text-left text-sm text-error overflow-x-auto"><%= error.stack %></pre>
+        </div>
+      <% } %>
+
+      <div class="mt-8 space-y-4">
+        <button onclick="window.history.back()" class="btn btn-secondary w-full">
+          <i class="fas fa-arrow-left"></i>
+          Go Back
+        </button>
+        
+        <a href="/" class="btn btn-primary w-full">
+          <i class="fas fa-home"></i>
+          Return Home
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center text-sm text-secondary">
+      <p>If this error persists, please contact support</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.min-h-screen {
+  min-height: 100vh;
+}
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
+}
+.overflow-x-auto {
+  overflow-x: auto;
+}
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+</style>
+
+<%- include('partials/footer') %>
