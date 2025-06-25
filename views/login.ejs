@@ -1,0 +1,121 @@
+<%- include('partials/header') %>
+
+<div class="min-h-screen flex items-center justify-center py-12 px-4">
+  <div class="max-w-md w-full">
+    <div class="card">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
+        <p class="text-secondary">Sign in to manage your servers</p>
+      </div>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="bg-error bg-opacity-10 text-error px-4 py-3 rounded-lg mb-6">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-exclamation-circle"></i>
+            <p><%= error %></p>
+          </div>
+        </div>
+      <% } %>
+
+      <form action="/login" method="POST" class="space-y-6">
+        <div>
+          <label for="username" class="block text-sm font-medium mb-2">Username</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-secondary">
+              <i class="fas fa-user"></i>
+            </span>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              class="input pl-10" 
+              placeholder="Enter your username"
+              required
+              autocomplete="username"
+            >
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium mb-2">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-secondary">
+              <i class="fas fa-lock"></i>
+            </span>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="input pl-10" 
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+            >
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" class="btn btn-primary w-full">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-secondary">
+          Don't have an account? 
+          <a href="/register" class="text-primary hover:text-primary-dark font-medium">
+            Create one now
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center text-sm text-secondary">
+      <p>Protected by <%= typeof name !== 'undefined' ? name : 'XLPanel' %></p>
+      <p class="mt-1">Version <%= typeof version !== 'undefined' ? version : '1.0' %></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.min-h-screen {
+  min-height: 100vh;
+}
+.inset-y-0 {
+  top: 0;
+  bottom: 0;
+}
+.left-0 {
+  left: 0;
+}
+.pl-3 {
+  padding-left: 0.75rem;
+}
+.pl-10 {
+  padding-left: 2.5rem;
+}
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
+.bg-opacity-10 {
+  --tw-bg-opacity: 0.1;
+}
+.max-w-md {
+  max-width: 28rem;
+}
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+</style>
+
+<%- include('partials/footer') %>
