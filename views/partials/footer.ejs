@@ -1,0 +1,82 @@
+</main>
+  <footer class="mt-auto py-6">
+    <div class="container">
+      <div class="flex items-center justify-between text-sm text-secondary">
+        <div>
+          &copy; <%= new Date().getFullYear() %> <%= typeof name !== 'undefined' ? name : 'XLPanel' %>. All rights reserved.
+        </div>
+        <div class="flex items-center gap-4">
+          <% if (typeof user !== 'undefined' && user) { %>
+            <span>Logged in as <strong><%= user %></strong></span>
+          <% } %>
+          <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+            <span class="badge badge-success">Admin</span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Progress bar animation
+    document.querySelectorAll('.progress').forEach(progress => {
+      const bar = progress.querySelector('.progress-bar');
+      if (bar) {
+        const width = bar.getAttribute('data-width');
+        setTimeout(() => {
+          bar.style.width = width + '%';
+        }, 100);
+      }
+    });
+
+    // Card hover effect
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-4px)';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Flash messages
+    const flashMessages = document.querySelectorAll('.flash-message');
+    flashMessages.forEach(message => {
+      setTimeout(() => {
+        message.style.opacity = '0';
+        setTimeout(() => {
+          message.remove();
+        }, 300);
+      }, 5000);
+    });
+
+    // Server actions
+    document.querySelectorAll('[data-server-action]').forEach(button => {
+      button.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const action = button.getAttribute('data-server-action');
+        const serverId = button.getAttribute('data-server-id');
+        
+        try {
+          const response = await fetch(`/servers/${serverId}/power`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action })
+          });
+          
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            throw new Error('Failed to perform server action');
+          }
+        } catch (error) {
+          console.error('Server action error:', error);
+          alert('Failed to perform server action. Please try again.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
