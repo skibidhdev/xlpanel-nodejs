@@ -1,0 +1,331 @@
+<%- include('partials/header') %>
+
+<div class="container py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold mb-4">AFK Coin Farm</h1>
+      <p class="text-secondary">Earn 5 coins every 120 seconds while AFK</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- AFK Status Card -->
+      <div class="card">
+        <h2 class="text-xl font-semibold mb-4">AFK Status</h2>
+        
+        <div id="afk-status" class="text-center">
+          <div id="idle-state">
+            <div class="text-6xl mb-4">😴</div>
+            <p class="text-lg mb-4">Ready to start AFK farming</p>
+            <button id="start-afk" class="btn btn-primary">
+              <i class="fas fa-play"></i>
+              Start AFK
+            </button>
+          </div>
+
+          <div id="active-state" class="hidden">
+            <div class="text-6xl mb-4">⏰</div>
+            <p class="text-lg mb-2">AFK Farming Active</p>
+            <div id="timer" class="text-2xl font-bold mb-4">00:00</div>
+            <div id="next-reward" class="text-sm text-secondary mb-4">
+              Next reward in: <span id="next-timer">120s</span>
+            </div>
+            <button id="stop-afk" class="btn btn-error">
+              <i class="fas fa-stop"></i>
+              Stop AFK
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Card -->
+      <div class="card">
+        <h2 class="text-xl font-semibold mb-4">Farming Stats</h2>
+        
+        <div class="space-y-4">
+          <div class="flex justify-between">
+            <span>Current Coins:</span>
+            <span id="current-coins" class="font-semibold"><%= coins %></span>
+          </div>
+          
+          <div class="flex justify-between">
+            <span>Session Earned:</span>
+            <span id="session-earned" class="font-semibold text-success">0</span>
+          </div>
+          
+          <div class="flex justify-between">
+            <span>Total Time:</span>
+            <span id="total-time" class="font-semibold">00:00:00</span>
+          </div>
+          
+          <div class="flex justify-between">
+            <span>Rewards Collected:</span>
+            <span id="rewards-count" class="font-semibold">0</span>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="font-semibold mb-2">Reward Rate</h3>
+          <div class="bg-primary bg-opacity-20 p-3 rounded">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-primary">5 Coins</div>
+              <div class="text-sm">Every 120 seconds</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card mt-6">
+      <h2 class="text-xl font-semibold mb-4">Recent AFK Sessions</h2>
+      <div id="recent-sessions">
+        <p class="text-secondary text-center py-4">No recent sessions</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.grid {
+  display: grid;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.md\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.max-w-4xl {
+  max-width: 56rem;
+}
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.hidden {
+  display: none;
+}
+.bg-opacity-20 {
+  --tw-bg-opacity: 0.2;
+}
+.rounded {
+  border-radius: 0.25rem;
+}
+.p-3 {
+  padding: 0.75rem;
+}
+</style>
+
+<script>
+let afkSession = null;
+let startTime = null;
+let timerInterval = null;
+let rewardInterval = null;
+let sessionEarned = 0;
+let rewardsCount = 0;
+
+const startAfkBtn = document.getElementById('start-afk');
+const stopAfkBtn = document.getElementById('stop-afk');
+const idleState = document.getElementById('idle-state');
+const activeState = document.getElementById('active-state');
+const timer = document.getElementById('timer');
+const nextTimer = document.getElementById('next-timer');
+const currentCoins = document.getElementById('current-coins');
+const sessionEarnedEl = document.getElementById('session-earned');
+const totalTimeEl = document.getElementById('total-time');
+const rewardsCountEl = document.getElementById('rewards-count');
+
+startAfkBtn.addEventListener('click', startAFK);
+stopAfkBtn.addEventListener('click', stopAFK);
+
+async function startAFK() {
+  try {
+    const response = await fetch('/afk/start', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      afkSession = data.sessionId;
+      startTime = Date.now();
+      sessionEarned = 0;
+      rewardsCount = 0;
+      
+      idleState.classList.add('hidden');
+      activeState.classList.remove('hidden');
+      
+      startTimers();
+    } else {
+      alert('Failed to start AFK session: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Error starting AFK:', error);
+    alert('Failed to start AFK session');
+  }
+}
+
+async function stopAFK() {
+  if (!afkSession || !startTime) return;
+  
+  try {
+    const duration = Date.now() - startTime;
+    
+    const response = await fetch('/afk/end', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sessionId: afkSession,
+        duration: duration
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // Update UI with earned coins
+      const currentCoinsValue = parseInt(currentCoins.textContent);
+      currentCoins.textContent = currentCoinsValue + data.coinsEarned;
+      
+      // Show success message
+      if (data.coinsEarned > 0) {
+        alert(`AFK session ended! You earned ${data.coinsEarned} coins in ${Math.floor(data.duration / 60)} minutes.`);
+      } else {
+        alert('AFK session ended! No coins earned (minimum 120 seconds required).');
+      }
+      
+      resetAFK();
+    } else {
+      alert('Failed to end AFK session: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Error stopping AFK:', error);
+    alert('Failed to end AFK session');
+  }
+}
+
+function startTimers() {
+  let nextRewardTime = 120;
+  
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    timer.textContent = formatTime(elapsed);
+    totalTimeEl.textContent = formatTimeHMS(elapsed);
+    
+    nextRewardTime--;
+    nextTimer.textContent = nextRewardTime + 's';
+    
+    if (nextRewardTime <= 0) {
+      // Award coins
+      sessionEarned += 5;
+      rewardsCount++;
+      sessionEarnedEl.textContent = sessionEarned;
+      rewardsCountEl.textContent = rewardsCount;
+      
+      // Update current coins display
+      const currentCoinsValue = parseInt(currentCoins.textContent);
+      currentCoins.textContent = currentCoinsValue + 5;
+      
+      // Reset timer
+      nextRewardTime = 120;
+      
+      // Show notification
+      showNotification('Earned 5 coins!');
+    }
+  }, 1000);
+}
+
+function resetAFK() {
+  afkSession = null;
+  startTime = null;
+  
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  activeState.classList.add('hidden');
+  idleState.classList.remove('hidden');
+  
+  timer.textContent = '00:00';
+  nextTimer.textContent = '120s';
+  sessionEarnedEl.textContent = '0';
+  totalTimeEl.textContent = '00:00:00';
+  rewardsCountEl.textContent = '0';
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function formatTimeHMS(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function showNotification(message) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-4 right-4 bg-success text-white px-4 py-2 rounded shadow-lg z-50';
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// Handle page visibility change (stop AFK when tab is not visible)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && afkSession) {
+    // Optionally pause or stop AFK when tab is hidden
+    console.log('Tab hidden - AFK continues in background');
+  }
+});
+
+// Prevent accidental page refresh during AFK
+window.addEventListener('beforeunload', (e) => {
+  if (afkSession) {
+    e.preventDefault();
+    e.returnValue = 'You have an active AFK session. Are you sure you want to leave?';
+  }
+});
+</script>
+
+<%- include('partials/footer') %>
