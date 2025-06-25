@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth bg-black text-white font-jetbrains">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <nav class="bg-gray-900 shadow-md p-4 flex justify-between items-center">
+    <div class="text-xl font-semibold">{{ name }}</div>
+    <div class="space-x-4">
+      {% for i in list(mIt.keys()) %}
+      <a href="{{ mIt[i]['link'] }}" class="hover:text-blue-500 {% if request.path.replace('/', '') == mIt[i]['link'].replace('/', '') %}text-blue-400 font-bold{% else %}text-gray-300{% endif %}">
+        {{ i }}
+      </a>
+      {% endfor %}
+      {% if isAdmin %}
+      <a href="/admin" class="hover:text-red-500 text-gray-300">Admin Panel</a>
+      {% endif %}
+      <span class="ml-4 text-gray-400">User: {{ user }}</span>
+      <span class="ml-2 text-gray-400">Coins: {{ coin }}</span>
+    </div>
+  </nav>
+  <main class="flex-grow container mx-auto p-6">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="bg-gray-900 text-gray-400 p-4 text-center text-sm">
+    &copy; 2024-{{ datetime.datetime.now().strftime("%Y") }} <a href="https://github.com/h3l2f/xlpanel" class="hover:text-blue-500">Xlpanel</a>.
+  </footer>
+</body>
+</html>
