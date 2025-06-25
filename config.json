@@ -5,8 +5,8 @@
     "bigWel": "Welcome to XLPanel",
     "smallWel": "Manage your game servers with ease",
     "pterodactyl": {
-        "domain": "https://panel.hentaiviet.top",
-        "key": "ptla_ma27p1Q7HyojtU6zQoWNjM2ddFfWej3QjLjJGxw1tZU",
+        "domain": "",
+        "key": "",
         "location": 1,
         "egg": 5,
         "nest": 1
@@ -20,8 +20,8 @@
         "smtp": {
             "host": "smtp.gmail.com",
             "port": 465,
-            "user": "herinmmb123@gmail.com",
-            "password": "vjsoaqfeexxtkxko",
+            "user": "",
+            "password": "",
             "_pwdComment": "If you are using gmail, use app password (generate in google account)",
             "from": "Memcho CLoud <h3l2f@h3l2f.site>",
             "_fromComment": "Use name<email> to set the sender name."
