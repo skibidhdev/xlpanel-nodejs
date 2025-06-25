@@ -1,0 +1,409 @@
+<%- include('partials/header') %>
+
+<div class="container py-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold mb-4">My Servers</h1>
+      <p class="text-secondary">Manage your game servers</p>
+    </div>
+
+    <% if (error) { %>
+      <div class="mb-6 p-4 bg-error bg-opacity-20 text-error rounded-lg">
+        <p class="text-center"><%= error %></p>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="mb-6 p-4 bg-success bg-opacity-20 text-success rounded-lg">
+        <p class="text-center"><%= success %></p>
+      </div>
+    <% } %>
+
+    <% if (!hasServers) { %>
+      <!-- No servers - Show create form centered -->
+      <div class="card max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6 text-center">Create Your First Server</h2>
+        
+        <form action="/servers/create" method="POST" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium mb-2">Server Name</label>
+            <input 
+              type="text" 
+              name="name" 
+              placeholder="Enter server name"
+              class="input"
+              required
+            >
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">CPU (%)</label>
+              <input 
+                type="number" 
+                name="cpu" 
+                placeholder="100"
+                min="50"
+                max="500"
+                class="input"
+                required
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">RAM (MB)</label>
+              <input 
+                type="number" 
+                name="memory" 
+                placeholder="1024"
+                min="512"
+                max="4096"
+                class="input"
+                required
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Disk (MB)</label>
+              <input 
+                type="number" 
+                name="disk" 
+                placeholder="2048"
+                min="1024"
+                max="10240"
+                class="input"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Choose Node</label>
+              <select name="node" class="input" required>
+                <option value="">Choose node</option>
+                <% availableNodes.forEach(node => { %>
+                  <option value="<%= node.id %>"><%= node.name %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Choose Egg</label>
+              <select name="egg" class="input" required>
+                <option value="">Choose egg</option>
+                <% availableEggs.forEach(egg => { %>
+                  <option value="<%= egg.id %>"><%= egg.name %></option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full">
+            <i class="fas fa-plus mr-2"></i>
+            Create Server
+          </button>
+        </form>
+      </div>
+    <% } else { %>
+      <!-- Has servers - Show side by side layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left side - Create server form -->
+        <div class="card">
+          <h2 class="text-2xl font-bold mb-6">Create New Server</h2>
+          
+          <form action="/servers/create" method="POST" class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">Server Name</label>
+              <input 
+                type="text" 
+                name="name" 
+                placeholder="Enter server name"
+                class="input"
+                required
+              >
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-2">CPU (%)</label>
+                <input 
+                  type="number" 
+                  name="cpu" 
+                  placeholder="100"
+                  min="50"
+                  max="500"
+                  class="input"
+                  required
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2">RAM (MB)</label>
+                <input 
+                  type="number" 
+                  name="memory" 
+                  placeholder="1024"
+                  min="512"
+                  max="4096"
+                  class="input"
+                  required
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2">Disk (MB)</label>
+                <input 
+                  type="number" 
+                  name="disk" 
+                  placeholder="2048"
+                  min="1024"
+                  max="10240"
+                  class="input"
+                  required
+                >
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">Choose Node</label>
+              <select name="node" class="input" required>
+                <option value="">Choose node</option>
+                <% availableNodes.forEach(node => { %>
+                  <option value="<%= node.id %>"><%= node.name %></option>
+                <% }); %>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">Choose Egg</label>
+              <select name="egg" class="input" required>
+                <option value="">Choose egg</option>
+                <% availableEggs.forEach(egg => { %>
+                  <option value="<%= egg.id %>"><%= egg.name %></option>
+                <% }); %>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full">
+              <i class="fas fa-plus mr-2"></i>
+              Create Server
+            </button>
+          </form>
+        </div>
+
+        <!-- Right side - Server list -->
+        <div class="card">
+          <h2 class="text-2xl font-bold mb-6">Your Servers</h2>
+          
+          <div class="space-y-4 max-h-96 overflow-y-auto">
+            <% servers.forEach(server => { %>
+              <div class="server-card p-4 bg-card-bg rounded-lg border border-border">
+                <div class="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 class="text-lg font-semibold"><%= server.attributes.name %></h3>
+                    <p class="text-sm text-secondary"><%= server.attributes.identifier %></p>
+                  </div>
+                  <span class="badge <%= server.attributes.suspended ? 'badge-error' : 'badge-success' %>">
+                    <%= server.attributes.suspended ? 'Suspended' : 'Active' %>
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mb-4 text-sm">
+                  <div>
+                    <span class="text-secondary">CPU:</span>
+                    <div class="font-medium"><%= server.attributes.limits.cpu %>%</div>
+                  </div>
+                  <div>
+                    <span class="text-secondary">RAM:</span>
+                    <div class="font-medium"><%= server.attributes.limits.memory %>MB</div>
+                  </div>
+                  <div>
+                    <span class="text-secondary">Disk:</span>
+                    <div class="font-medium"><%= server.attributes.limits.disk %>MB</div>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <a href="<%= config.pterodactyl?.domain || '#' %>/server/<%= server.attributes.identifier %>" 
+                     target="_blank" 
+                     class="btn btn-primary btn-sm flex-1 text-center">
+                    Panel
+                  </a>
+                  <a href="<%= config.pterodactyl?.domain || '#' %>/server/<%= server.attributes.identifier %>" 
+                     target="_blank" 
+                     class="btn btn-secondary btn-sm flex-1 text-center">
+                    Manage
+                  </a>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<style>
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-medium {
+  font-weight: 500;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mr-2 {
+  margin-right: 0.5rem;
+}
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.p-4 {
+  padding: 1rem;
+}
+.max-w-7xl {
+  max-width: 80rem;
+}
+.max-w-2xl {
+  max-width: 42rem;
+}
+.max-h-96 {
+  max-height: 24rem;
+}
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.grid {
+  display: grid;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.gap-8 {
+  gap: 2rem;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.gap-3 {
+  gap: 0.75rem;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+.text-center {
+  text-align: center;
+}
+.block {
+  display: block;
+}
+.flex {
+  display: flex;
+}
+.flex-1 {
+  flex: 1 1 0%;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.items-start {
+  align-items: flex-start;
+}
+.w-full {
+  width: 100%;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.bg-opacity-20 {
+  --tw-bg-opacity: 0.2;
+}
+.overflow-y-auto {
+  overflow-y: auto;
+}
+.border {
+  border-width: 1px;
+}
+.server-card {
+  transition: all 0.2s ease;
+}
+.server-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-success {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: rgb(34, 197, 94);
+}
+.badge-error {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: rgb(239, 68, 68);
+}
+</style>
+
+<%- include('partials/footer') %>
