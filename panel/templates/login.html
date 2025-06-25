@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/general.css">
+    <link rel="stylesheet" href="/assets/css/verify.css">
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/png">
+    <title>Forgot Password - {{name}}</title>
+    <link rel="stylesheet" href="/assets/css/forgot.css">
+</head>
+<body>
+    <div class="forgot-container">
+        <h2>Forgot your password?</h2>
+        <h4>Enter your email to reset your password</h4>
+        <div class="forgot-input">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="text" id="code" autocomplete="off" spellcheck="false" placeholder="Enter your email">
+        </div>
+        <button class="forgot-btn" onclick="reset()" id="btn">Send email</button>
+        <div class="forgot-alert" id="forgotAlert"></div>
+    </div>
+    <script>
+        function reset() {
+            const code = document.getElementById("code");
+            const btn = document.getElementById("btn");
+            const alertBox = document.getElementById("forgotAlert");
+            if (code.value.length < 6) return;
+            code.setAttribute("disabled", "");
+            btn.setAttribute("disabled", "");
+            alertBox.style.display = 'none';
+            let formData = new FormData();
+            formData.append("email", code.value);
+            fetch("/forgot/", {
+                method: "POST",
+                body: formData
+            })
+            .then(r => r.json())
+            .then(r => {
+                code.removeAttribute("disabled");
+                btn.removeAttribute("disabled");
+                alertBox.style.display = 'block';
+                if (r.status !== "ok") {
+                    alertBox.textContent = r.message;
+                    alertBox.className = 'forgot-alert';
+                } else {
+                    alertBox.textContent = "An email with the new password has been sent to your mailbox!";
+                    alertBox.className = 'forgot-alert forgot-success';
+                    setTimeout(()=>{ window.location.href = "/login"; }, 2000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
