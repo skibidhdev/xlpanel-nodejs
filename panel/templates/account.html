@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> <!-- I hate this shit, trust me:> -->
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/assets/css/general.css">
+    <link rel="stylesheet" href="/assets/css/dash_css.css">
+    <link rel="stylesheet" href="/assets/css/account.css">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/png">
+    <script>
+        document.onreadystatechange = function() {
+            if (document.readyState == 'complete') {
+                $(".loading").fadeOut(200)
+                $("body").css("overflow-y","unset")
+                $("main").delay(300).css("animation", "showing 0.5s forwards ease-in-out");
+                document.onreadystatechange = () => {}
+            }
+        };
+    </script>
+    <script src="/assets/js/account.js"></script>
+    <script src="/assets/js/dash.js"></script>
+    <script src="/assets/js/signF.js"></script>
+    <title>Your account - {{name}}</title>
+</head>
+<body>
+    <div class="loading">
+        <div class="loader"></div>
+    </div>
+    <div class="nav">
+        <div class="name">
+            {{name}}
+        </div>
+        <div class="items">
+            <a onclick="sh()">
+                <div id="menuToggle" class="it">
+                    <i class="fa-solid fa-bars"></i><it>&nbsp;Hide menu</it>
+                </div>
+            </a>
+            {% for i in list(mIt.keys()) %}
+            <a href="{{mIt[i]['link']}}" {% if request.path.replace('/','') == mIt[i]['link'].replace('/','') %} class="sp" {% endif %}>
+                <div class="it">
+                    {{mIt[i]["icon"] | safe}}<it>&nbsp;{{i}}</it>
+                </div>
+            </a>
+            {% endfor %}
+            {% if isAdmin %}
+            <a href="/admin">
+                <div class="it">
+                    <i class="fa-solid fa-lock"></i><it>&nbsp;Admin Panel</it>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+        <div class="users">
+            <h5>{{user}}</h5>
+            <h6>Coins: {{coin}}</h6>
+        </div>
+    </div>
+    <div class="main">
+        <main>
+            <div class="title">
+                <h2>Account</h2>
+                <h4>Here is your information about your account!</h4>
+            </div>
+            
+            {% if error!="changed" and error %}
+            <div class="err">
+                <h3>Error on changing password:</h3>
+                <h4>{{error}}</h4>
+            </div>
+            {% elif error=="changed" %}
+            <div class="done">
+                <h3>Your password has been changed.</h3>
+                <h4>Remember: we don't change your pterodactyl account password!</h4>
+            </div>
+            {% endif %}
+
+            <div class="info">
+                <div class="r">
+                    <h4>Username:</h4>
+                    <h3>{{user}}</h3>
+                </div>
+                <div class="r">
+                    <h4>Role:</h4>
+                    <h3>{{"admin" if isAdmin else "user"}}</h3>
+                </div>
+                <div class="cpass">
+                    <h3 style="font-weight: 100">Change password</h3>
+                    <form method="post" action="/account/change">
+                        <div class="inp">
+                            <input type="password" name="crpasswd" placeholder="Current password" required>
+                            <button type="button" onclick="passwdToggle(this, 'crpasswd')">
+                                <i d="n" class="fa-regular fa-eye"></i>
+                                <i d="f" class="fa-regular fa-eye-slash" style="display: none"></i>
+                            </button>
+                        </div>
+                        <div class="inp">
+                            <input type="password" name="nwpasswd" placeholder="New password" minlength="8" required>
+                            <button type="button" onclick="passwdToggle(this, 'nwpasswd')">
+                                <i d="n" class="fa-regular fa-eye"></i>
+                                <i d="f" class="fa-regular fa-eye-slash" style="display: none"></i>
+                            </button>
+                        </div>
+                        <div class="inp">
+                            <input type="password" name="cnwpasswd" placeholder="Confirm password" minlength="8" required>
+                            <button type="button" onclick="passwdToggle(this, 'cnwpasswd')">
+                                <i d="n" class="fa-regular fa-eye"></i>
+                                <i d="f" class="fa-regular fa-eye-slash" style="display: none"></i>
+                            </button>
+                        </div>
+                        <div class="submit">
+                            <input type="submit" value="Change password">
+                        </div>
+                    </form>
+                </div>
+                <div class="ptero">
+                    <h3 style="font-weight: 100">Pterodactyl credential</h3>
+                    <div class="inf">
+                        <h4>Email:</h4>
+                        <input type="text" value="{{email}}" disabled>
+                    </div>
+                    <div class="inf">
+                        <h4>Password:</h4>
+                        <input type="text" placeholder="Please reset to view!" id="pteropwd" disabled>
+                    </div>
+                    <button id="pterobtn" onclick="reset()">Reset</button>
+                    <script>
+                        function reset() {
+                            $("#pterobtn").attr("disabled","")
+                            fetch("/account/ptero/")
+                            .then(r => r.json())
+                            .then(r => {
+                                if (r.status == "ok") {
+                                    $("#pteropwd").val(r.passwd)
+                                } else {
+                                    alert(r.message)
+                                }
+                                $("#pterobtn").removeAttr("disabled")
+                            })
+                        }
+                    </script>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <div class="text">
+                    <h6 style="float: right; margin-top: 2px;">
+                        <i class="fa-regular fa-clock"></i>
+                        {{loadTime}}s
+                    </h6>
+                    <h5>Copyright © 2024-{{datetime.datetime.now().strftime("%Y")}} <a href="https://github.com/h3l2f/xlpanel">Xlpanel</a>.</h5>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
